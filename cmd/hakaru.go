@@ -18,13 +18,9 @@ import (
 // hakaruCmd represents the hakaru command
 var hakaruCmd = &cobra.Command{
 	Use:   "hakaru",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Watch your work time on each projects",
+	Long: `Watch your work time on each projects. You can specify directory paths to your GitHub projects, and then
+	a watcher process would measure work time on each projects.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
