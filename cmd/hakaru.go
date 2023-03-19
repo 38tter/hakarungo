@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -34,12 +36,27 @@ to quickly create a Cobra application.`,
 			fmt.Println("Specify projects you want to watch")
 			os.Exit(1)
 		}
-		filepath := args[0]
+		dirpaths := args[0:]
 
 		var workTime time.Duration
 		now := time.Now()
 
 		isWorking := false
+
+		var watchingDirs []string
+		for _, dirpath := range dirpaths {
+			gitLsDIrCommand := "cd " + dirpath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
+			output, err := exec.Command("sh", "-c", gitLsDIrCommand).CombinedOutput()
+			fmt.Printf("CombineOutput: %s, Error: %v\n", output, err)
+
+			dirs := strings.Split(string(output), "\n")
+
+			var fullPathDirs []string
+			for _, dir := range dirs {
+				fullPathDirs = append(fullPathDirs, dirpath+"/"+dir)
+			}
+			watchingDirs = append(watchingDirs, fullPathDirs...)
+		}
 
 		go func() {
 			for {
@@ -73,9 +90,11 @@ to quickly create a Cobra application.`,
 			}
 		}()
 
-		err = watcher.Add(filepath)
-		if err != nil {
-			log.Fatal(err)
+		for _, dir := range watchingDirs {
+			err = watcher.Add(dir)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		<-make(chan struct{})
