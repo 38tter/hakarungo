@@ -34,6 +34,13 @@ var hakaruCmd = &cobra.Command{
 		}
 		dirpaths := args[0:]
 
+		for _, dir := range dirpaths {
+			if f, err := os.Stat(dir); os.IsNotExist(err) || !f.IsDir() {
+				fmt.Printf("Directory %s does not exist\n", dir)
+				os.Exit(1)
+			}
+		}
+
 		var workTime time.Duration
 		now := time.Now()
 
