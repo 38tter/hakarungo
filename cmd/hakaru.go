@@ -43,7 +43,9 @@ var hakaruCmd = &cobra.Command{
 		for _, dirpath := range dirpaths {
 			gitLsDIrCommand := "cd " + dirpath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
 			output, err := exec.Command("sh", "-c", gitLsDIrCommand).CombinedOutput()
-			fmt.Printf("CombineOutput: %s, Error: %v\n", output, err)
+			if err != nil {
+				panic(err)
+			}
 
 			dirs := strings.Split(string(output), "\n")
 
