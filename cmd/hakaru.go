@@ -29,7 +29,7 @@ var hakaruCmd = &cobra.Command{
 		defer watcher.Close()
 
 		if len(args) < 1 {
-			fmt.Println("Specify projects you want to watch")
+			fmt.Println(`Specify path to projects you want to watch like "hakaru ../path/to/project"`)
 			os.Exit(1)
 		}
 		dirpaths := args[0:]
