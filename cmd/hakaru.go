@@ -97,9 +97,9 @@ var hakaruCmd = &cobra.Command{
 					}
 					log.Println("error: ", err)
 				case s := <-sigs:
-					fmt.Println("Signal accepted: ", s)
-					fmt.Println("Directories is", strings.Join(dirpaths, ", "))
-					fmt.Println("Working time is", workTime.String())
+					log.Println("Signal accepted:", s)
+					log.Println("Directories is", strings.Join(dirpaths, ", "))
+					log.Println("Working time is", workTime.String())
 					os.Exit(1)
 				}
 			}
