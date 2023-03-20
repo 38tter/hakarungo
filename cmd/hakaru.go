@@ -8,7 +8,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -27,6 +29,9 @@ var hakaruCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		defer watcher.Close()
+
+		sigs := make(chan os.Signal, 1)
+		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
 		if len(args) < 1 {
 			fmt.Println(`Specify path to projects you want to watch like "hakaru ../path/to/project"`)
@@ -91,6 +96,11 @@ var hakaruCmd = &cobra.Command{
 						return
 					}
 					log.Println("error: ", err)
+				case s := <-sigs:
+					fmt.Println("Signal accepted: ", s)
+					fmt.Println("Directories is", strings.Join(dirpaths, ", "))
+					fmt.Println("Working time is", workTime.String())
+					os.Exit(1)
 				}
 			}
 		}()
