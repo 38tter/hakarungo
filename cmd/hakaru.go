@@ -105,12 +105,7 @@ var hakaruCmd = &cobra.Command{
 			}
 		}()
 
-		for _, dir := range watchingDirs {
-			err = watcher.Add(dir)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
+		addWatchingDirs(watchingDirs, watcher)
 
 		<-make(chan struct{})
 	},
@@ -128,4 +123,13 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// hakaruCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func addWatchingDirs(watchingDirs []string, watcher *fsnotify.Watcher) {
+	for _, dir := range watchingDirs {
+		err := watcher.Add(dir)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
