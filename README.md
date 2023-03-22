@@ -1,2 +1,2 @@
 # hakarungo
-go-based time tracker
+A go-based time tracker
