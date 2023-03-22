@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -63,7 +64,7 @@ var hakaruCmd = &cobra.Command{
 
 			var fullPathDirs []string
 			for _, dir := range dirs {
-				fullPathDirs = append(fullPathDirs, dirpath+"/"+dir)
+				fullPathDirs = append(fullPathDirs, filepath.Join(dirpath, dir))
 			}
 			watchingDirs = append(watchingDirs, fullPathDirs...)
 		}
