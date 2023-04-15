@@ -24,11 +24,20 @@ $ hakarungo hakaru <path-to-directory>
 
 ```
 $ hakarungo hakaru .
-2023/04/15 19:37:44 modified file:  app/models/hoge.rb
-2023/04/15 19:37:44 work time:  0s
-2023/04/15 19:37:50 modified file:  app/services/fuga_service.rb
-2023/04/15 19:37:50 work time:  5.979647051s
-^C2023/04/15 19:38:03 Signal accepted: interrupt # you can terminate tracker with Ctrl+C
-2023/04/15 19:38:03 Directories is .
-2023/04/15 19:38:03 Working time is 5.979647051s
+$ hakarungo hakaru .
+2023/04/15 20:00:14 modified file:  app/models/hoge.rb
+2023/04/15 20:00:14 work time:  0s
+2023/04/15 20:00:15 modified file:  app/services/fuga_service.rb
+2023/04/15 20:00:15 work time:  1.133917784s
+2023/04/15 20:08:13 modified file:  app/services/fuga_service.rb
+2023/04/15 20:08:13 work time:  5m1.133917784s
+2023/04/15 20:08:14 modified file:  app/models/hoge.rb
+2023/04/15 20:08:14 work time:  5m2.734506335s
+2023/04/15 20:09:26 modified file:  app/models/piyo.rb
+2023/04/15 20:09:26 work time:  6m14.632756347s
+2023/04/15 20:09:27 modified file:  app/services/fuga_service.rb
+2023/04/15 20:09:27 work time:  6m15.273970107s
+^C2023/04/15 20:09:30 Signal accepted: interrupt # you can terminate tracker by Ctrl + C
+2023/04/15 20:09:30 Directories is .
+2023/04/15 20:09:30 Working time is 6m15.273970107s
 ```
