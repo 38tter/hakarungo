@@ -54,8 +54,14 @@ var hakaruCmd = &cobra.Command{
 
 		var watchingDirs []string
 		for _, dirpath := range dirpaths {
+			disableEscapeMultiByteCharsCommand := "cd " + dirpath + "&& git config core.quotepath false"
+			output, err := exec.Command("sh", "-c", disableEscapeMultiByteCharsCommand).CombinedOutput()
+			if err != nil {
+				panic(err)
+			}
+
 			gitLsDIrCommand := "cd " + dirpath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
-			output, err := exec.Command("sh", "-c", gitLsDIrCommand).CombinedOutput()
+			output, err = exec.Command("sh", "-c", gitLsDIrCommand).CombinedOutput()
 			if err != nil {
 				panic(err)
 			}
