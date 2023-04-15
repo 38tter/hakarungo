@@ -24,7 +24,6 @@ $ hakarungo hakaru <path-to-directory>
 
 ```
 $ hakarungo hakaru .
-$ hakarungo hakaru .
 2023/04/15 20:00:14 modified file:  app/models/hoge.rb
 2023/04/15 20:00:14 work time:  0s
 2023/04/15 20:00:15 modified file:  app/services/fuga_service.rb
