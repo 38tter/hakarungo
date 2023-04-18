@@ -1,7 +1,7 @@
 # hakarungo
 A go-based time tracker
 
-It keeps records of the time when one of the files in files tracked by git is modified and sums up the duration (currently, the maximum is 5 minutes) as a work time.
+It keeps records of the time when one of the files tracked by git is modified and sums up the duration (currently, the maximum is 5 minutes) as a work time.
 
 ## Setup
 
