@@ -38,9 +38,9 @@ var hakaruCmd = &cobra.Command{
 			fmt.Println(`Specify path to projects you want to watch like "hakaru ../path/to/project"`)
 			os.Exit(1)
 		}
-		dirpaths := args[0:]
+		dirPaths := args[0:]
 
-		for _, dir := range dirpaths {
+		for _, dir := range dirPaths {
 			if f, err := os.Stat(dir); os.IsNotExist(err) || !f.IsDir() {
 				fmt.Printf("Directory %s does not exist\n", dir)
 				os.Exit(1)
@@ -53,14 +53,14 @@ var hakaruCmd = &cobra.Command{
 		isWorking := false
 
 		var watchingDirs []string
-		for _, dirpath := range dirpaths {
-			disableEscapeMultiByteCharsCommand := "cd " + dirpath + "&& git config core.quotepath false"
+		for _, dirPath := range dirPaths {
+			disableEscapeMultiByteCharsCommand := "cd " + dirPath + "&& git config core.quotepath false"
 			output, err := exec.Command("sh", "-c", disableEscapeMultiByteCharsCommand).CombinedOutput()
 			if err != nil {
 				panic(err)
 			}
 
-			gitLsDIrCommand := "cd " + dirpath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
+			gitLsDIrCommand := "cd " + dirPath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
 			output, err = exec.Command("sh", "-c", gitLsDIrCommand).CombinedOutput()
 			if err != nil {
 				panic(err)
@@ -70,7 +70,7 @@ var hakaruCmd = &cobra.Command{
 
 			var fullPathDirs []string
 			for _, dir := range dirs {
-				fullPathDirs = append(fullPathDirs, filepath.Join(dirpath, dir))
+				fullPathDirs = append(fullPathDirs, filepath.Join(dirPath, dir))
 			}
 			watchingDirs = append(watchingDirs, fullPathDirs...)
 		}
@@ -105,7 +105,7 @@ var hakaruCmd = &cobra.Command{
 					log.Println("error: ", err)
 				case s := <-sigs:
 					log.Println("Signal accepted:", s)
-					log.Println("Directories is", directoriesWithAbsolutePath(dirpaths))
+					log.Println("Directories is", directoriesWithAbsolutePath(dirPaths))
 					log.Println("Working time is", workTime.String())
 					os.Exit(1)
 				}
