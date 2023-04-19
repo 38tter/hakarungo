@@ -105,7 +105,7 @@ var hakaruCmd = &cobra.Command{
 					log.Println("error: ", err)
 				case s := <-sigs:
 					log.Println("Signal accepted:", s)
-					log.Println("Directories is", strings.Join(dirpaths, ", "))
+					log.Println("Directories is", directoriesWithAbsolutePath(dirpaths))
 					log.Println("Working time is", workTime.String())
 					os.Exit(1)
 				}
@@ -120,6 +120,15 @@ var hakaruCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(hakaruCmd)
+}
+
+func directoriesWithAbsolutePath(relativePaths []string) string {
+	absolutePaths := []string{}
+	for _, p := range relativePaths {
+		path, _ := filepath.Abs(p)
+		absolutePaths = append(absolutePaths, path)
+	}
+	return strings.Join(absolutePaths, ", ")
 }
 
 func addWatchingDirs(watchingDirs []string, watcher *fsnotify.Watcher) {
