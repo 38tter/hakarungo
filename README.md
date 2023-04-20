@@ -23,7 +23,7 @@ $ hakarungo hakaru <path-to-directory1> <path-to-directory2> ...
 ### Example
 
 ```
-$ hakarungo hakaru .
+$ hakarungo hakaru . ~/wd/direcotry2 ../directory3
 2023/04/15 20:00:14 modified file:  app/models/hoge.rb
 2023/04/15 20:00:14 work time:  0s
 2023/04/15 20:00:15 modified file:  app/services/fuga_service.rb
@@ -37,6 +37,6 @@ $ hakarungo hakaru .
 2023/04/15 20:09:27 modified file:  app/services/fuga_service.rb
 2023/04/15 20:09:27 work time:  6m15.273970107s
 ^C2023/04/15 20:09:30 Signal accepted: interrupt # you can terminate tracker by Ctrl + C
-2023/04/15 20:09:30 Directories is .
+2023/04/15 20:09:30 Directories is /path/to/directory1, /path/to/directory2, /path/to/directory3
 2023/04/15 20:09:30 Working time is 6m15.273970107s
 ```
