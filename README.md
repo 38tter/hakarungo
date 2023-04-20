@@ -17,7 +17,7 @@ $ go build
 ## How to use
 
 ```
-$ hakarungo hakaru <path-to-directory>
+$ hakarungo hakaru <path-to-directory1> <path-to-directory2> ...
 ```
 
 ### Example
