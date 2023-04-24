@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 Seiya Miyata <odradek38@gmail.com>
 */
 package cmd
 
