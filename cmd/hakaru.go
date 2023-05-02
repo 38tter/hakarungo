@@ -52,28 +52,7 @@ var hakaruCmd = &cobra.Command{
 
 		isWorking := false
 
-		var watchingDirs []string
-		for _, dirPath := range dirPaths {
-			disableEscapeMultiByteCharsCommand := "cd " + dirPath + "&& git config core.quotepath false"
-			output, err := exec.Command("sh", "-c", disableEscapeMultiByteCharsCommand).CombinedOutput()
-			if err != nil {
-				panic(err)
-			}
-
-			gitLsDIrCommand := "cd " + dirPath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
-			output, err = exec.Command("sh", "-c", gitLsDIrCommand).CombinedOutput()
-			if err != nil {
-				panic(err)
-			}
-
-			dirs := strings.Split(string(output), "\n")
-
-			var fullPathDirs []string
-			for _, dir := range dirs {
-				fullPathDirs = append(fullPathDirs, filepath.Join(dirPath, dir))
-			}
-			watchingDirs = append(watchingDirs, fullPathDirs...)
-		}
+		watchingDirs := getWatchingDirs(dirPaths)
 
 		go func() {
 			for {
@@ -129,6 +108,33 @@ func directoriesWithAbsolutePath(relativePaths []string) string {
 		absolutePaths = append(absolutePaths, path)
 	}
 	return strings.Join(absolutePaths, ", ")
+}
+
+func getWatchingDirs(dirPaths []string) []string {
+	var watchingDirs []string
+	for _, dirPath := range dirPaths {
+		disableEscapeMultiByteCharsCommand := "cd " + dirPath + "&& git config core.quotepath false"
+		output, err := exec.Command("sh", "-c", disableEscapeMultiByteCharsCommand).CombinedOutput()
+		if err != nil {
+			panic(err)
+		}
+
+		gitLsDIrCommand := "cd " + dirPath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
+		output, err = exec.Command("sh", "-c", gitLsDIrCommand).CombinedOutput()
+		if err != nil {
+			panic(err)
+		}
+
+		dirs := strings.Split(string(output), "\n")
+
+		var fullPathDirs []string
+		for _, dir := range dirs {
+			fullPathDirs = append(fullPathDirs, filepath.Join(dirPath, dir))
+		}
+		watchingDirs = append(watchingDirs, fullPathDirs...)
+	}
+
+	return watchingDirs
 }
 
 func addWatchingDirs(watchingDirs []string, watcher *fsnotify.Watcher) {
