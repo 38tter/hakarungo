@@ -40,12 +40,7 @@ var hakaruCmd = &cobra.Command{
 		}
 		dirPaths := args[0:]
 
-		for _, dir := range dirPaths {
-			if f, err := os.Stat(dir); os.IsNotExist(err) || !f.IsDir() {
-				fmt.Printf("Directory %s does not exist\n", dir)
-				os.Exit(1)
-			}
-		}
+		validateDirectories(dirPaths)
 
 		var workTime time.Duration
 		now := time.Now()
@@ -99,6 +94,15 @@ var hakaruCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(hakaruCmd)
+}
+
+func validateDirectories(dirPaths []string) {
+	for _, dir := range dirPaths {
+		if f, err := os.Stat(dir); os.IsNotExist(err) || !f.IsDir() {
+			fmt.Printf("Directory %s does not exist\n", dir)
+			os.Exit(1)
+		}
+	}
 }
 
 func directoriesWithAbsolutePath(relativePaths []string) string {
