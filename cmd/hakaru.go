@@ -86,7 +86,7 @@ var hakaruCmd = &cobra.Command{
 			}
 		}()
 
-		addWatchingDirs(watchingDirs, watcher)
+		addWatchingDirsToWatcher(watchingDirs, watcher)
 
 		<-make(chan struct{})
 	},
@@ -141,7 +141,7 @@ func getWatchingDirs(dirPaths []string) []string {
 	return watchingDirs
 }
 
-func addWatchingDirs(watchingDirs []string, watcher *fsnotify.Watcher) {
+func addWatchingDirsToWatcher(watchingDirs []string, watcher *fsnotify.Watcher) {
 	for _, dir := range watchingDirs {
 		err := watcher.Add(dir)
 		if err != nil {
