@@ -35,7 +35,7 @@ var hakaruCmd = &cobra.Command{
 		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
 		if len(args) < 1 {
-			fmt.Println(`Specify path to projects you want to watch like "hakaru ../path/to/project"`)
+			fmt.Println(`Specify path to projects you want to watch like "hakaru /path/to/project1 /path/to/project2"`)
 			os.Exit(1)
 		}
 		dirPaths := args[0:]
@@ -123,8 +123,8 @@ func getWatchingDirs(dirPaths []string) []string {
 			panic(err)
 		}
 
-		gitLsDIrCommand := "cd " + dirPath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
-		output, err = exec.Command("sh", "-c", gitLsDIrCommand).CombinedOutput()
+		gitLsDirCommand := "cd " + dirPath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
+		output, err = exec.Command("sh", "-c", gitLsDirCommand).CombinedOutput()
 		if err != nil {
 			panic(err)
 		}
