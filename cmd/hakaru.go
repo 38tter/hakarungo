@@ -109,11 +109,6 @@ func init() {
 	rootCmd.AddCommand(hakaruCmd)
 }
 
-type workTime struct {
-	dirPaths []string
-	workTime map[string]time.Duration
-}
-
 func validateDirectories(dirPaths []string) {
 	for _, dir := range dirPaths {
 		if f, err := os.Stat(dir); os.IsNotExist(err) || !f.IsDir() {
