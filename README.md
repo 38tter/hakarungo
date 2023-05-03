@@ -1,4 +1,6 @@
 # hakarungo
+[![GoDev][godev-image]][godev-url]
+
 A go-based time tracker
 
 It keeps records of the time when one of the files tracked by git is modified and sums up the duration (currently, the maximum is 5 minutes) as a work time.
@@ -40,3 +42,6 @@ $ hakarungo hakaru . ~/wd/direcotry2 ../directory3
 2023/04/15 20:09:30 Directories is /path/to/directory1, /path/to/directory2, /path/to/directory3
 2023/04/15 20:09:30 Working time is 6m15.273970107s
 ```
+
+[godev-image]: https://pkg.go.dev/badge/github.com/38tter/hakarungo
+[godev-url]: https://pkg.go.dev/github.com/38tter/hakarungo
