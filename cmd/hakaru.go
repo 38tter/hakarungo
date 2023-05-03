@@ -79,14 +79,14 @@ var hakaruCmd = &cobra.Command{
 					log.Println("error: ", err)
 				case s := <-sigs:
 					log.Println("Signal accepted:", s)
-					log.Println("Directories is", directoriesWithAbsolutePath(dirPaths))
+					log.Println("Directories is", strings.Join(directoriesWithAbsolutePath(dirPaths), ", "))
 					log.Println("Working time is", workTime.String())
 					os.Exit(1)
 				}
 			}
 		}()
 
-		addWatchingDirsToWatcher(watchingDirs, watcher)
+		addWatchingDirsToWatcher(directoriesWithAbsolutePath(watchingDirs), watcher)
 
 		<-make(chan struct{})
 	},
@@ -105,13 +105,13 @@ func validateDirectories(dirPaths []string) {
 	}
 }
 
-func directoriesWithAbsolutePath(relativePaths []string) string {
+func directoriesWithAbsolutePath(relativePaths []string) []string {
 	absolutePaths := []string{}
 	for _, p := range relativePaths {
 		path, _ := filepath.Abs(p)
 		absolutePaths = append(absolutePaths, path)
 	}
-	return strings.Join(absolutePaths, ", ")
+	return absolutePaths
 }
 
 func getWatchingDirs(dirPaths []string) []string {
