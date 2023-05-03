@@ -42,7 +42,15 @@ var hakaruCmd = &cobra.Command{
 
 		validateDirectories(dirPaths)
 
-		var workTime time.Duration
+		wt := make(map[string]time.Duration)
+		for _, path := range dirPaths {
+			wt[path] = 0 * time.Minute
+		}
+		workTime := workTime{
+			dirPaths: directoriesWithAbsolutePath(dirPaths),
+			workTime: wt,
+		}
+
 		now := time.Now()
 
 		isWorking := false
@@ -59,16 +67,18 @@ var hakaruCmd = &cobra.Command{
 					if event.Has(fsnotify.Write) {
 						log.Println("modified file: ", event.Name)
 
+						parentDirPath := getParentDirPath(directoriesWithAbsolutePath(watchingDirs), event.Name)
+
 						if isWorking {
 							if time.Since(now) <= 5*time.Minute {
-								workTime += time.Since(now)
+								workTime.workTime[parentDirPath] += time.Since(now)
 							} else {
-								workTime += 5 * time.Minute
+								workTime.workTime[parentDirPath] += 5 * time.Minute
 							}
 						}
 
 						now = time.Now()
-						log.Println("work time: ", workTime)
+						log.Println("work time: ", workTime.workTime[parentDirPath])
 
 						isWorking = true
 					}
@@ -80,7 +90,10 @@ var hakaruCmd = &cobra.Command{
 				case s := <-sigs:
 					log.Println("Signal accepted:", s)
 					log.Println("Directories is", strings.Join(directoriesWithAbsolutePath(dirPaths), ", "))
-					log.Println("Working time is", workTime.String())
+					log.Println("Total work time is", totalWorkTime(workTime.workTime).String())
+					for _, p := range workTime.dirPaths {
+						log.Println("Directory:", p, "Work time:", workTime.workTime[p].String())
+					}
 					os.Exit(1)
 				}
 			}
@@ -94,6 +107,11 @@ var hakaruCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(hakaruCmd)
+}
+
+type workTime struct {
+	dirPaths []string
+	workTime map[string]time.Duration
 }
 
 func validateDirectories(dirPaths []string) {
@@ -148,4 +166,30 @@ func addWatchingDirsToWatcher(watchingDirs []string, watcher *fsnotify.Watcher) 
 			log.Fatal(err)
 		}
 	}
+}
+
+func totalWorkTime(workTimes map[string]time.Duration) time.Duration {
+	var total time.Duration
+	for _, t := range workTimes {
+		total += t
+	}
+	return total
+}
+
+func getParentDirPath(parentDirPaths []string, dir string) string {
+	for _, parentDir := range parentDirPaths {
+		relPath, err := filepath.Rel(parentDir, dir)
+		if err != nil {
+			panic(err)
+		}
+
+		if relPath != "." && relPath != ".." && filepath.Base(relPath) != relPath {
+			// dir has parent directory
+			return parentDir
+		}
+	}
+	fmt.Printf("%v has no watching parent directory. Terminate watcher.", dir)
+	os.Exit(1)
+
+	return ""
 }
