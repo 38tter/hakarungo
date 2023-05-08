@@ -7,13 +7,12 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"os/signal"
-	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
 
+	"github.com/38tter/hakarungo/util"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 )
@@ -47,7 +46,7 @@ var hakaruCmd = &cobra.Command{
 			wt[path] = 0 * time.Minute
 		}
 		workTime := workTime{
-			dirPaths: directoriesWithAbsolutePath(dirPaths),
+			dirPaths: util.DirectoriesWithAbsolutePath(dirPaths),
 			workTime: wt,
 		}
 
@@ -55,7 +54,7 @@ var hakaruCmd = &cobra.Command{
 
 		isWorking := false
 
-		watchingDirs := getWatchingDirs(dirPaths)
+		watchingDirs := util.GetWatchingDirs(dirPaths)
 
 		go func() {
 			for {
@@ -67,7 +66,7 @@ var hakaruCmd = &cobra.Command{
 					if event.Has(fsnotify.Write) {
 						log.Println("modified file: ", event.Name)
 
-						parentDirPath := getParentDirPath(directoriesWithAbsolutePath(watchingDirs), event.Name)
+						parentDirPath := util.GetParentDirPath(util.DirectoriesWithAbsolutePath(watchingDirs), event.Name)
 
 						if isWorking {
 							if time.Since(now) <= 5*time.Minute {
@@ -89,8 +88,8 @@ var hakaruCmd = &cobra.Command{
 					log.Println("error: ", err)
 				case s := <-sigs:
 					log.Println("Signal accepted:", s)
-					log.Println("Directories is", strings.Join(directoriesWithAbsolutePath(dirPaths), ", "))
-					log.Println("Total work time is", totalWorkTime(workTime.workTime).String())
+					log.Println("Directories is", strings.Join(util.DirectoriesWithAbsolutePath(dirPaths), ", "))
+					log.Println("Total work time is", TotalWorkTime(workTime.workTime).String())
 					for _, p := range workTime.dirPaths {
 						log.Println("Directory:", p, "Work time:", workTime.workTime[p].String())
 					}
@@ -99,7 +98,7 @@ var hakaruCmd = &cobra.Command{
 			}
 		}()
 
-		addWatchingDirsToWatcher(directoriesWithAbsolutePath(watchingDirs), watcher)
+		addWatchingDirsToWatcher(util.DirectoriesWithAbsolutePath(watchingDirs), watcher)
 
 		<-make(chan struct{})
 	},
@@ -118,42 +117,6 @@ func validateDirectories(dirPaths []string) {
 	}
 }
 
-func directoriesWithAbsolutePath(relativePaths []string) []string {
-	absolutePaths := []string{}
-	for _, p := range relativePaths {
-		path, _ := filepath.Abs(p)
-		absolutePaths = append(absolutePaths, path)
-	}
-	return absolutePaths
-}
-
-func getWatchingDirs(dirPaths []string) []string {
-	var watchingDirs []string
-	for _, dirPath := range dirPaths {
-		disableEscapeMultiByteCharsCommand := "cd " + dirPath + "&& git config core.quotepath false"
-		output, err := exec.Command("sh", "-c", disableEscapeMultiByteCharsCommand).CombinedOutput()
-		if err != nil {
-			panic(err)
-		}
-
-		gitLsDirCommand := "cd " + dirPath + "&& git ls-files | sed -e '/^[^\\/]*$/d' -e 's/\\/[^\\/]*$//g' | sort | uniq"
-		output, err = exec.Command("sh", "-c", gitLsDirCommand).CombinedOutput()
-		if err != nil {
-			panic(err)
-		}
-
-		dirs := strings.Split(string(output), "\n")
-
-		var fullPathDirs []string
-		for _, dir := range dirs {
-			fullPathDirs = append(fullPathDirs, filepath.Join(dirPath, dir))
-		}
-		watchingDirs = append(watchingDirs, fullPathDirs...)
-	}
-
-	return watchingDirs
-}
-
 func addWatchingDirsToWatcher(watchingDirs []string, watcher *fsnotify.Watcher) {
 	for _, dir := range watchingDirs {
 		err := watcher.Add(dir)
@@ -161,30 +124,4 @@ func addWatchingDirsToWatcher(watchingDirs []string, watcher *fsnotify.Watcher) 
 			log.Fatal(err)
 		}
 	}
-}
-
-func totalWorkTime(workTimes map[string]time.Duration) time.Duration {
-	var total time.Duration
-	for _, t := range workTimes {
-		total += t
-	}
-	return total
-}
-
-func getParentDirPath(parentDirPaths []string, dir string) string {
-	for _, parentDir := range parentDirPaths {
-		relPath, err := filepath.Rel(parentDir, dir)
-		if err != nil {
-			panic(err)
-		}
-
-		if relPath != "." && relPath != ".." && filepath.Base(relPath) != relPath {
-			// dir has parent directory
-			return parentDir
-		}
-	}
-	fmt.Printf("%v has no watching parent directory. Terminate watcher.", dir)
-	os.Exit(1)
-
-	return ""
 }
