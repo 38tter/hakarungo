@@ -16,7 +16,7 @@ $ go install
 $ go build
 ```
 
-## How to use
+## Usage
 
 ```
 $ hakarungo hakaru <path-to-directory1> <path-to-directory2> ...
